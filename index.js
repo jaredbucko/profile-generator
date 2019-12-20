@@ -26,6 +26,10 @@ function promptUser() {
   ])
 };
 
+function generatePDF() {
+  return ``
+}
+
 promptUser()
   .then(function(data) {
     const username = data.username;
