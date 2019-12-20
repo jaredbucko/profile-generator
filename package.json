@@ -1,0 +1,22 @@
+{
+  "name": "profile-generator",
+  "version": "1.0.0",
+  "description": "Week 9 node.js homework assignment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaredbucko/profile-generator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaredbucko/profile-generator/issues"
+  },
+  "homepage": "https://github.com/jaredbucko/profile-generator#readme",
+  "dependencies": {
+    "inquirer": "^6.5.2"
+  }
+}
