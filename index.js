@@ -71,7 +71,7 @@ promptUser()
         <div class="jumbotron" style="background-color: darkorange; margin: 5% 5% 5% 5%;">
           <h1 class="display-4 text-center">Hello! My name is ${name}</h1>
           <div class="d-flex justify-content-center">
-            <img src="https://avatars1.githubusercontent.com/u/53447123?v=4" alt="profile picture" style="border-radius: 50%;">
+            <img src="${img}" alt="profile picture" style="border-radius: 50%;">
           </div>
           <p class="lead text-center"></p>
           <hr class="my-4">
@@ -79,7 +79,7 @@ promptUser()
           <div class="d-flex justify-content-center">
             <a class="btn btn-secondary btn-md ml-1 mr-1" href="https://www.google.com/maps/@?api=1&map_action=map&query=${location}" role="button" target="_blank">${location}</a>
             <a class="btn btn-secondary btn-md ml-1 mr-1" href="${github}" role="button" target="_blank">GitHub</a>
-            <a class="btn btn-secondary btn-md ml-1 mr-1" href="${blog}" role="button" target="_blank">Blog</a>
+            <a class="btn btn-secondary btn-md ml-1 mr-1" href="https://${blog}" role="button" target="_blank">Blog</a>
           </div>
         </div>
         <div class="container">
