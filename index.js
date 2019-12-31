@@ -3,6 +3,12 @@ const axios = require("axios");
 const inquirer = require("inquirer");
 const util = require("util");
 
+const convertFactory = require('electron-html-to');
+ 
+const conversion = convertFactory({
+  converterPath: convertFactory.converters.PDF
+});
+
 const writeFileAsync = util.promisify(fs.writeFile);
 const appendFileAsync = util.promisify(fs.appendFile);
 const readFileAsync = util.promisify(fs.readFile);
@@ -33,10 +39,25 @@ function promptUser() {
   ])
 };
 
+function createPDF() {
+  let htmlString = readFileAsync('profile.html', 'utf8', (err, data) => {
+    if (err) throw err;
+    conversion({ html: htmlString }, function(err, result) {
+      if (err) {
+        return console.error(err);
+      }
+    console.log(result.numberOfPages);
+    console.log(result.logs);
+    result.stream.pipe(fs.createWriteStream('profile.pdf'));
+    conversion.kill(); // necessary if you use the electron-server strategy, see bellow for details
+    });
+  });
+};
+
 promptUser()
 .then(function(data) {
   const username = data.username;
-  const color = "light" + data.color;
+  const color = data.color;
   axios
     .get(`https://api.github.com/users/${username}`, config)
     .then(function(res) {
@@ -70,7 +91,7 @@ promptUser()
       </style>
     </head>
       <body style="background-color: white;">
-        <div class="jumbotron" style="background-color: ${color}; margin: 5% 5% 5% 5%;">
+        <div class="jumbotron" style="background-color: light${color}; margin: 2% 5% 2% 5%;">
           <h1 class="display-4 text-center">Hello! My name is ${name}</h1>
           <div class="d-flex justify-content-center">
             <img src="${img}" alt="profile picture" style="border-radius: 50%;">
@@ -122,5 +143,5 @@ promptUser()
         </div>
       </body>
       </html>`)
-    })
+    }).then(createPDF());
   });
