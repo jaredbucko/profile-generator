@@ -1,11 +1,11 @@
-const fs = require("fs");
 const axios = require("axios");
 const inquirer = require("inquirer");
 const util = require("util");
 
-const convertFactory = require('electron-html-to');
+var fs = require('fs'),
+    convertFactory = require('electron-html-to');
  
-const conversion = convertFactory({
+var conversion = convertFactory({
   converterPath: convertFactory.converters.PDF
 });
 
@@ -39,109 +39,116 @@ function promptUser() {
   ])
 };
 
-function createPDF() {
-  let htmlString = readFileAsync('profile.html', 'utf8', (err, data) => {
-    if (err) throw err;
-    conversion({ html: htmlString }, function(err, result) {
-      if (err) {
-        return console.error(err);
-      }
+function processFile(input) {
+  conversion({ html: input }, function(err, result) {
+    if (err) {
+      return console.error(err);
+    }
+   
     console.log(result.numberOfPages);
     console.log(result.logs);
     result.stream.pipe(fs.createWriteStream('profile.pdf'));
     conversion.kill(); // necessary if you use the electron-server strategy, see bellow for details
-    });
   });
-};
+}
 
-promptUser()
-.then(function(data) {
-  const username = data.username;
-  const color = data.color;
-  axios
-    .get(`https://api.github.com/users/${username}`, config)
-    .then(function(res) {
-      const img = res.data.avatar_url;
-      const name = res.data.name;
-      const location = res.data.location;
-      const github = res.data.html_url;
-      const blog = res.data.blog;
-      const bio = res.data.bio;
-      const repos = res.data.public_repos;
-      const followers = res.data.followers;
-      const stars = res.data.public_gists;
-      const following = res.data.following;
-      console.log(res.data);
-      console.log(name);
-      console.log(location);
-      console.log(bio);
-    writeFileAsync('profile.html', 
-    `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="X-UA-Compatible" content="ie=edge">
-      <!-- bootstrap -->
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-      <!-- color themes -->
-      <link rel="stylesheet" href="">
-      <title>Document</title>
-      <style>
-      </style>
-    </head>
-      <body style="background-color: white;">
-        <div class="jumbotron" style="background-color: light${color}; margin: 2% 5% 2% 5%;">
-          <h1 class="display-4 text-center">Hello! My name is ${name}</h1>
-          <div class="d-flex justify-content-center">
-            <img src="${img}" alt="profile picture" style="border-radius: 50%;">
+function generateHTML() {
+  promptUser()
+  .then(function(data) {
+    const username = data.username;
+    const color = data.color;
+    axios
+      .get(`https://api.github.com/users/${username}`, config)
+      .then(function(res) {
+        const img = res.data.avatar_url;
+        const name = res.data.name;
+        const location = res.data.location;
+        const github = res.data.html_url;
+        const blog = res.data.blog;
+        const bio = res.data.bio;
+        const repos = res.data.public_repos;
+        const followers = res.data.followers;
+        const stars = res.data.public_gists;
+        const following = res.data.following;
+      writeFileAsync('profile.html', 
+      `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <!-- bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <!-- color themes -->
+        <link rel="stylesheet" href="">
+        <title>Document</title>
+        <style>
+        </style>
+      </head>
+        <body style="background-color: white;">
+          <div class="jumbotron" style="background-color: ${color}; margin: 2% 5% 2% 5%;">
+            <h1 class="display-4 text-center">Hello! My name is ${name}</h1>
+            <div class="d-flex justify-content-center">
+              <img src="${img}" alt="profile picture" style="border-radius: 50%;">
+            </div>
+            <p class="lead text-center"></p>
+            <hr class="my-4">
+            <p class="text-center">${bio}</p>
+            <div class="d-flex justify-content-center">
+              <a class="btn btn-secondary btn-md ml-1 mr-1" href="https://www.google.com/maps/@?api=1&map_action=map&query=${location}" role="button" target="_blank">${location}</a>
+              <a class="btn btn-secondary btn-md ml-1 mr-1" href="${github}" role="button" target="_blank">GitHub</a>
+              <a class="btn btn-secondary btn-md ml-1 mr-1" href="https://${blog}" role="button" target="_blank">Blog</a>
+            </div>
           </div>
-          <p class="lead text-center"></p>
-          <hr class="my-4">
-          <p class="text-center">${bio}</p>
-          <div class="d-flex justify-content-center">
-            <a class="btn btn-secondary btn-md ml-1 mr-1" href="https://www.google.com/maps/@?api=1&map_action=map&query=${location}" role="button" target="_blank">${location}</a>
-            <a class="btn btn-secondary btn-md ml-1 mr-1" href="${github}" role="button" target="_blank">GitHub</a>
-            <a class="btn btn-secondary btn-md ml-1 mr-1" href="https://${blog}" role="button" target="_blank">Blog</a>
-          </div>
-        </div>
-        <div class="container">
-          <div class="row">
-            <div class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center">
-              <div class="card text-center" style="width: 18rem; margin-bottom: 5%;">
-                <div class="card-body">
-                  <h5 class="card-title">Public Repositories</h5>
-                  <p class="card-text">${repos}</p>
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center">
+                <div class="card text-center" style="width: 18rem; margin-bottom: 5%;">
+                  <div class="card-body">
+                    <h5 class="card-title">Public Repositories</h5>
+                    <p class="card-text">${repos}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center">
-              <div class="card text-center" style="width: 18rem; margin-bottom: 5%;">
-                <div class="card-body">
-                  <h5 class="card-title">Followers</h5>
-                  <p class="card-text">${followers}</p>
+              <div class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center">
+                <div class="card text-center" style="width: 18rem; margin-bottom: 5%;">
+                  <div class="card-body">
+                    <h5 class="card-title">Followers</h5>
+                    <p class="card-text">${followers}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center">
-              <div class="card text-center" style="width: 18rem; margin-bottom: 5%;">
-                <div class="card-body">
-                  <h5 class="card-title">GitHub Stars</h5>
-                  <p class="card-text">${stars}</p>
+              <div class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center">
+                <div class="card text-center" style="width: 18rem; margin-bottom: 5%;">
+                  <div class="card-body">
+                    <h5 class="card-title">GitHub Stars</h5>
+                    <p class="card-text">${stars}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center">
-              <div class="card text-center" style="width: 18rem; margin-bottom: 5%;">
-                <div class="card-body">
-                  <h5 class="card-title">Following</h5>
-                  <p class="card-text">${following}</p>
+              <div class="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center">
+                <div class="card text-center" style="width: 18rem; margin-bottom: 5%;">
+                  <div class="card-body">
+                    <h5 class="card-title">Following</h5>
+                    <p class="card-text">${following}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </body>
-      </html>`)
-    }).then(createPDF());
-  });
+        </body>
+        </html>`)
+      })
+    })
+  };
+
+generateHTML();
+
+fs.readFile('profile.html', function read(err, data) {
+  if (err) {
+      throw err;
+  }
+  content = data;
+
+  processFile(content);
+});
