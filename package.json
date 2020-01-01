@@ -18,7 +18,7 @@
   "homepage": "https://github.com/jaredbucko/profile-generator#readme",
   "dependencies": {
     "axios": "^0.19.0",
-    "electron": "^1.8.8",
+    "electron": "^5.0.12",
     "electron-html-to": "^2.6.0",
     "inquirer": "^6.5.2"
   }
