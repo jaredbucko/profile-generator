@@ -41,6 +41,7 @@ function promptUser() {
 
 function processFile(input) {
   conversion({ html: input }, function(err, result) {
+
     if (err) {
       return console.error(err);
     }
@@ -50,9 +51,9 @@ function processFile(input) {
     result.stream.pipe(fs.createWriteStream('profile.pdf'));
     conversion.kill(); // necessary if you use the electron-server strategy, see bellow for details
   });
-}
+};
 
-function generateHTML() {
+function generatePDF() {
   promptUser()
   .then(function(data) {
     const username = data.username;
@@ -70,7 +71,7 @@ function generateHTML() {
         const followers = res.data.followers;
         const stars = res.data.public_gists;
         const following = res.data.following;
-      writeFileAsync('profile.html', 
+      writeFileAsync('profile.txt', 
       `<!DOCTYPE html>
       <html lang="en">
       <head>
@@ -138,17 +139,17 @@ function generateHTML() {
           </div>
         </body>
         </html>`)
+      }).then(function(){
+        fs.readFile('profile.txt', function read(err, data) {
+          if (err) {
+              throw err;
+          }
+          content = data;
+        
+          processFile(content);
+        });
       })
     })
   };
 
-generateHTML();
-
-fs.readFile('profile.html', function read(err, data) {
-  if (err) {
-      throw err;
-  }
-  content = data;
-
-  processFile(content);
-});
+generatePDF();
