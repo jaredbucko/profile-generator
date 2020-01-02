@@ -71,7 +71,7 @@ function generatePDF() {
         const followers = res.data.followers;
         const stars = res.data.public_gists;
         const following = res.data.following;
-      writeFileAsync('profile.txt', 
+      writeFileAsync('profile.html', 
       `<!DOCTYPE html>
       <html lang="en">
       <head>
@@ -84,13 +84,22 @@ function generatePDF() {
         <link rel="stylesheet" href="">
         <title>Document</title>
         <style>
+          body {
+            color: ${color};
+          }
+          img {
+            border-radius: 50%;
+            border-style: solid;
+            border-width: 5px;
+            border-color: dark${color};
+          }
         </style>
       </head>
-        <body style="background-color: white;">
-          <div class="jumbotron" style="background-color: ${color}; margin: 2% 5% 2% 5%;">
+        <body>
+          <div class="jumbotron" style="background-color: light${color}; margin: 2% 5% 2% 5%;">
             <h1 class="display-4 text-center">Hello! My name is ${name}</h1>
             <div class="d-flex justify-content-center">
-              <img src="${img}" alt="profile picture" style="border-radius: 50%;">
+              <img src="${img}" alt="profile picture">
             </div>
             <p class="lead text-center"></p>
             <hr class="my-4">
@@ -140,7 +149,7 @@ function generatePDF() {
         </body>
         </html>`)
       }).then(function(){
-        fs.readFile('profile.txt', function read(err, data) {
+        fs.readFile('profile.html', function read(err, data) {
           if (err) {
               throw err;
           }
