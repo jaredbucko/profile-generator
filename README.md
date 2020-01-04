@@ -3,3 +3,5 @@ Node.js app that utilizes the GitHub API to retrieve GitHub users, generates an 
 
 ## Demo
 
+## Deployed URL
+https://jaredbucko.github.io/profile-generator/
